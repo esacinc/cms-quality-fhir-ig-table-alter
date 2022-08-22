@@ -72,7 +72,9 @@ java -jar IGListChange-0.0.1-SNAPSHOT.jar controlFilename
 - This app will successfully gather data from a json resource file if the desired field to retrieve is either a simple string, an unnamed json object, or an array of unnamed json objects:
   - String example:  
   ``` 
-  "id": "AdvancedIllnessandFrailtyExclusionECQMFHIR4" 
+  "id": "AdvancedIllnessandFrailtyExclusionECQMFHIR4"
+  
+  <newCol afterPos"0" label="Measure ID" type="string"  resourceField="id" default="N/A" />  
   ``` 
   - Object example:  
   ``` 
@@ -81,20 +83,24 @@ java -jar IGListChange-0.0.1-SNAPSHOT.jar controlFilename
        "lastUpdated": "2021-07-01T12:32:57.000-06:00",
        "source": "#lFh1NBD3JeX5ETtb",
        "profile": [ "http://hl7.org/fhir/us/cqfmeasures/StructureDefinition/computable-library-cqfm" ]
-  } 
-  ```    
+  }
+  
+  <newCol afterPos"0"  label="Source ID"  type="object" resourceField="meta" subField="source" default="unknown"/>  
+  ```      
   - Array example:  
-  ``` 
-  "relatedArtifact": [ {
-    "type": "depends-on",
-    "display": "FHIR model information",
-    "resource": "http://fhir.org/guides/cqf/common/Library/FHIR-ModelInfo|4.0.1"
+  ```
+  "identifier": [ {
+    "use": "official",
+    "system": "http://hl7.org/fhir/cqi/ecqm/Measure/Identifier/guid",
+    "value": "2138c351-1c17-4298-aebc-43b42b1aa1ba"
   }, {
-    "type": "depends-on",
-    "display": "Library FHIRHelpers",
-    "resource": "http://ecqi.healthit.gov/ecqms/Library/FHIRHelpers|4.0.001"
-  }] 
-  ```  
+    "use": "official",
+    "system": "http://hl7.org/fhir/cqi/ecqm/Measure/Identifier/cms",
+    "value": "124FHIR"
+  } ]
+  
+  <newColumn afterPos="0" label="CMS ID" resourceField="identifier" subField="value" type="array" regex="*.FHIR" default="-"></newColumn>
+```
    
   ## References
   - HL7 IG Tooling documentation:  https://confluence.hl7.org/display/FHIR/IG+Publisher+Documentation  
