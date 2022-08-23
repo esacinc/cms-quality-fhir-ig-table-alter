@@ -27,8 +27,8 @@ public class Controller {
 	private int targetTablePos = 0;					    // Which table in the html file to edit. (The file may contain more than one table.)
 	private List<String> resourceFilenames = null;		// The names of the .json resource files that we'll use to populate new columns in the table
 	private List<JSONObject> resources = null;          // The corresponding list of .json documents
-	private String resourceDir = null;                  // The full path to the directory where the resource files are located
-	private String outputHTMLFilename = null;           // The full pathname of the file to write the altered html document to
+	private String resourceDir = null;                  // The full or relative path to the directory where the resource files are located
+	private String outputHTMLFilename = null;           // The full or relative pathname of the file to write the altered html document to
 	private List<Element> oldColSpecs = null;           // The list of current column specs (read from the current descriptor xml)
 	private List<Element> newColSpecs = null;           // The list of new columns to add (specs read from the current descriptor xml)
 	
@@ -178,7 +178,7 @@ public class Controller {
 		newHeader.empty();
 		Element row = header.getElementsByTag("tr").get(0);
 		Element newRow = row.clone();                                 // Get the single row (<tr>) from the source table header
-		newRow.empty();                                               // Empty the clone row's children. (We'll repopulatee from the source, with changes.)
+		newRow.empty();                                               // Empty the clone row's children. (We'll re-populate from the source, with changes.)
 		Elements oldCols = row.getElementsByTag("th");                // Get the header column elements from the source
 		for (int i = 0; i < oldCols.size(); i++ ) {                   // For each header column, if we want to keep the column, copy/clone from the source to the new header row.
 			Element oldCol = oldCols.get(i);
@@ -219,7 +219,7 @@ public class Controller {
 		for (int r=0; r < rows.size(); r++) {
 		    Element row = rows.get(r);
 			Element newRow = row.clone();   
-			newRow.empty();                                        // Clone the row, then empty the clone row's children. (We'll repopulatee from the source, with changes.)       
+			newRow.empty();                                        // Clone the row, then empty the clone row's children. (We'll re-populate from the source, with changes.)       
 			Elements oldCols = row.getElementsByTag("td");  
 			//System.out.println("Row " + r + ": " +oldCols.size());
 		    JSONObject resource = resources.isEmpty() ? null : resources.get(r);  // Get the corresponding resource for this row. ASSUMPTION: The resource list is one-to-one with the rows in the table, in the same order.
