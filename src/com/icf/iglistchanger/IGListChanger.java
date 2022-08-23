@@ -7,7 +7,7 @@ public class IGListChanger {
 	
 	public static void main(String[] args) {
 		
-		String controlFile = "TableAlterDescriptors.xml";
+		String controlFile = "TableAlterDescriptors.xml";  // Relative pathname, implies this file is co-located with the application.
 		if (args.length > 0) {
 			controlFile = args[0];
 		}
