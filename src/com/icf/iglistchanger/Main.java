@@ -2,8 +2,14 @@ package com.icf.iglistchanger;
 
 import java.io.File;
 
-public class IGListChanger {
-
+/**
+ * This class consists of a single static method - 'main' - that reads a control file (xml) of table descriptors, creates a new Controller class, then loops through the control file's table descriptor elements and processes each by calling the appropriate Controller class methods.
+ * The main method takes a single, optional, string argument that is the pathname of the control file to use.  If no argument is provided, then a default filname is used:  "TableAlterDescritors.xml", co-located with the application jar file.
+ * 
+ * @author Dan Donahue
+ *
+ */
+public class Main {
 	
 	public static void main(String[] args) {
 		

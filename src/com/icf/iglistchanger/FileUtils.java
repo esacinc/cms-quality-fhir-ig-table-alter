@@ -8,27 +8,41 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.io.UnsupportedEncodingException;
-import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
-
-import javax.xml.parsers.DocumentBuilder;
-import javax.xml.parsers.DocumentBuilderFactory;
 
 import org.json.JSONObject;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.parser.Parser;
 
+/**
+ * This class contains static methods for opening, closing, and reading from various files used in the processing of table descriptors.
+ * 
+ * @author Dan Donahue
+ *
+ */
 public class FileUtils {
 
+	/**
+	 * Returns a org.jsoup.nodes.Document created by reading an XHTML (or HTML) file.
+	 *  
+	 * @param  filename of an XHTML or HTML file
+	 * @return org.jsoup.nodes.Document;
+	 */
 	public static Document parseXHtmlFile(String filename) {
 		org.jsoup.nodes.Document doc = Jsoup.parse(getHTML_String(filename), "UTF-8");
 		return doc;
 	}
 	
+	/**
+	 * Returns a string representing the HTML present in the given XHTML or HTML file.
+	 * 
+	 * @param  filename of an XHTML or HTML file
+	 * @return HTML as a string
+	 */
 	public static String getHTML_String(String filename) {
 	    StringBuilder contentBuilder = new StringBuilder();
 	    try {
@@ -46,6 +60,12 @@ public class FileUtils {
 
 	}
 	
+	/**
+	 * Returns a org.jsoup.nodes.Document created by reading an XML file.
+	 * 
+	 * @param  filename of an XML file
+	 * @return org.jsoup.nodes.Document;
+	 */
 	public static Document openXMLFile(String filename) {
 		Document doc = null;
 		try {
@@ -60,6 +80,14 @@ public class FileUtils {
 		return doc;
 	}
 	
+	/**
+	 * Given a org.jsoup.nodes.Document object, writes that object into a file with the given filename.
+	 * This writes the file in UTF-8 encoding.  
+	 * 
+	 * @param doc - an org.jsoup.nodes.Document to be written
+	 * @param filename - pathname of file to be written to
+	 * @return true if write was successful, false otherwise
+	 */
 	public static boolean writeXHtmlFile(Document doc, String filename) {
 		boolean isOk = true;
 		File file = new File(filename);
@@ -78,7 +106,12 @@ public class FileUtils {
 		return isOk;
 	}
 	
-	
+	/**
+	 * Give an directory name, returns a list of filenames in the top-level of that directory
+	 * 
+	 * @param directoryName - pathname of directory to examine
+	 * @return List&lt;String&gt; - List of filename strings
+	 */
 	public static List<String> getDirFiles(String directoryName) {
 		
 		List<String> results = new ArrayList<String>();
@@ -95,7 +128,12 @@ public class FileUtils {
 		return results;
 	}
 	
-	
+	/**
+	 * Given a file pathname, reads the contents of the file as a JSON object and returns that object.
+	 * 
+	 * @param filename - pathname of JSON file to read
+	 * @return JSONObject resulting for reading the given filename.
+	 */
 	public static JSONObject parseJsonFile(String filename) {
 		 JSONObject jsonContent = null;
 		File file = new File(filename);
