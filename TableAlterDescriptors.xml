@@ -42,11 +42,11 @@
     
      <table-descriptor>
         <generatedHTMLFile>C:\ICF-work\Dev\Measures\Ecqm-content-r4-2021\git-myFork\ecqm-content-r4-2021\output\measures.html</generatedHTMLFile>
-        <outputHTMLFile>measures-new.html</outputHTMLFile>
+        <outputHTMLFile>C:\ICF-work\Dev\Measures\Ecqm-content-r4-2021\git-myFork\ecqm-content-r4-2021\output\measuresNew.html</outputHTMLFile>
         <targetTablePos>0</targetTablePos>
         <resourceDirectory>C:\ICF-work\Dev\Measures\Ecqm-content-r4-2021\git-myFork\ecqm-content-r4-2021\input\resources\measure</resourceDirectory>
         <oldColumn oldPos="0" action="keep" resourceField="title"></oldColumn>
-        <newColumn after-pos="0" label="CMS ID" resourceField="identifier" subField="value" type="array" nth="" maxLen="" regex=".*FHIR" default="-"></newColumn>
+        <newColumn afterPos="0" label="CMS ID" resourceField="identifier" subField="value" type="array" nth="" maxLen="" regex=".*FHIR" default="-"></newColumn>
         <oldColumn oldPos="1" action="keep"  resource-field="description"></oldColumn>
      </table-descriptor>
     
