@@ -80,7 +80,6 @@ public class Controller {
 	private String resourceDir = null;                  // The full or relative path to the directory where the resource files are located
 	private String outputHTMLFilename = null;           // The full or relative pathname of the file to write the altered html document to
 	private List<Element> oldColSpecs = null;           // The list of current column specs (read from the current descriptor xml)
-	private List<Element> newColSpecs = null;           // The list of new columns to add (specs read from the current descriptor xml)
 	
 	/**
 	 * Opens the control xml file of the given filename (full pathname).
@@ -152,7 +151,6 @@ public class Controller {
 			this.outputHTMLFilename = getControlValue("generatedHTMLFile");
 		}
 		this.oldColSpecs = getOldColumnSpecs();
-		this.newColSpecs = getNewColumnSpecs();
 		this.resources = new ArrayList<JSONObject>();
 		if (this.resourceFilenames != null && !this.resourceFilenames.isEmpty()) {
 			for (String filename : this.resourceFilenames) {
@@ -231,13 +229,13 @@ public class Controller {
 	 */
 	public void processTableHeader() {
 		Element header = this.oldTable.getElementsByTag("thead").get(0);   // Assumes the source table we are working with has a single header element.
-		Element newHeader = header.clone();                           // Clone the header, and empty the clone's children
+		Element newHeader = header.clone();                                // Clone the header, and empty the clone's children
 		newHeader.empty();
 		Element row = header.getElementsByTag("tr").get(0);
-		Element newRow = row.clone();                                 // Get the single row (<tr>) from the source table header
-		newRow.empty();                                               // Empty the clone row's children. (We'll re-populate from the source, with changes.)
-		Elements oldCols = row.getElementsByTag("th");                // Get the header column elements from the source
-		for (int i = 0; i < oldCols.size(); i++ ) {                   // For each header column, if we want to keep the column, copy/clone from the source to the new header row.
+		Element newRow = row.clone();                                      // Get the single row (<tr>) from the source table header
+		newRow.empty();                                                    // Empty the clone row's children. (We'll re-populate from the source, with changes.)
+		Elements oldCols = row.getElementsByTag("th");                     // Get the header column elements from the source
+		for (int i = 0; i < oldCols.size(); i++ ) {                        // For each header column, if we want to keep the column, copy/clone from the source to the new header row.
 			Element oldCol = oldCols.get(i);
 			Element oldColSpec = this.oldColSpecs.get(i);
 			if ("keep".equalsIgnoreCase(oldColSpec.attr("action"))) {
@@ -249,15 +247,15 @@ public class Controller {
 				System.out.println("    Removing column " + i + ", " + oldCol.ownText());
 			}
 			Elements newCols = getNewColumnSpecs(String.format("%d", i));
-			for (Element newColSpec : newCols) {                 // Now see if there are any new columns to add after the current column position we are working on (via the after-pos column specs)
+			for (Element newColSpec : newCols) {                     // Now see if there are any new columns to add after the current column position we are working on (via the after-pos column specs)
 				System.out.println("    Adding column: " +   newColSpec.toString());
 				newRow.appendElement("th").text(newColSpec.attr("label"));
 			}
 			
 		}
-		this.newTable.empty();                                            // Clear the new table element
+		this.newTable.empty();                                       // Clear the new table element
 		newHeader.appendChild(newRow);                               // Add the new row to the new header
-		this.newTable.appendChild(newHeader);                             // Add the new header to the new table
+		this.newTable.appendChild(newHeader);                        // Add the new header to the new table
 		//System.out.println("\n\n" + this.newTable + "\n\n");
 		
 	}
@@ -270,18 +268,18 @@ public class Controller {
 	 */
 	public void processTableRows() {
 		Element body = this.oldTable.getElementsByTag("tbody").get(0);   // Assumes the source table we are working with has a single tbody element.
-		Element newBody = body.clone();                             // Clone the body, and empty the clone's children
+		Element newBody = body.clone();                                  // Clone the body, and empty the clone's children
 		newBody.empty();
-		Elements rows = body.getElementsByTag("tr");                // Now cycle through each row of the source table...
+		Elements rows = body.getElementsByTag("tr");                     // Now cycle through each row of the source table...
 		for (int r=0; r < rows.size(); r++) {
 		    Element row = rows.get(r);
 			Element newRow = row.clone();   
-			newRow.empty();                                        // Clone the row, then empty the clone row's children. (We'll re-populate from the source, with changes.)       
+			newRow.empty();                                              // Clone the row, then empty the clone row's children. (We'll re-populate from the source, with changes.)       
 			Elements oldCols = row.getElementsByTag("td");  
 			//System.out.println("Row " + r + ": " +oldCols.size());
 		    JSONObject resource = this.resources.isEmpty() ? null : this.resources.get(r);  // Get the corresponding resource for this row. ASSUMPTION: The resource list is one-to-one with the rows in the table, in the same order.
 
-			for (int i = 0; i < oldCols.size(); i++ ) {            // For each column in the source row, if we want to keep the column, copy/clone from the source to the new row.       
+			for (int i = 0; i < oldCols.size(); i++ ) {                  // For each column in the source row, if we want to keep the column, copy/clone from the source to the new row.       
 				Element oldCol = oldCols.get(i);
 				Element oldColSpec = this.oldColSpecs.get(i);
 				if ("keep".equalsIgnoreCase(oldColSpec.attr("action"))) {
@@ -290,15 +288,15 @@ public class Controller {
 					newRow.appendChild(newCol);	
 				}
 				Elements newCols = getNewColumnSpecs(String.format("%d", i));
-				for (Element newColSpec : newCols) {                 // Now see if there are any new columns to add after the current column position we are working on (via the after-pos column specs)
+				for (Element newColSpec : newCols) {                     // Now see if there are any new columns to add after the current column position we are working on (via the after-pos column specs)
 					String fieldVal = getResourceFieldValue(resource, newColSpec);
 					newRow.appendElement("td").text(fieldVal);
 				}
 				
 			}
-			newBody.appendChild(newRow);                             // Add this new row to the new body
+			newBody.appendChild(newRow);                                 // Add this new row to the new body
 		}
-		this.newTable.appendChild(newBody);                               // Add the new body to the new table
+		this.newTable.appendChild(newBody);                              // Add the new body to the new table
 		System.out.println("\n\nNew Table:\n" + this.newTable + "\n\n");
 		
 	}
@@ -316,7 +314,7 @@ public class Controller {
 		
 		// Read the column spec data into local variables. (Probably overkill, but makes things easier during debugging.)
 		String val = colSpec.attr("default");            // The default value (from the spec) will be returned if nothing else works out
-		String field = colSpec.attr("resourceField");   // The name of the field in the json resource to get
+		String field = colSpec.attr("resourceField");    // The name of the field in the json resource to get
 		String subField = colSpec.attr("subField");      // If the field is something other than a pure string, this is the name of the subsequent field to get
 		String fType = colSpec.attr("type");             // The 'type' of the field we are getting. Can be one of  string, object, or array
 		String nth = colSpec.attr("nth");                // Referring to which element in a field's array to get

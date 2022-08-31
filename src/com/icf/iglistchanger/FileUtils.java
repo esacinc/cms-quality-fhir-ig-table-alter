@@ -4,10 +4,11 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
-import java.io.FileReader;
 import java.io.IOException;
+import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.io.UnsupportedEncodingException;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.ArrayList;
@@ -33,7 +34,15 @@ public class FileUtils {
 	 * @return org.jsoup.nodes.Document;
 	 */
 	public static Document parseXHtmlFile(String filename) {
-		org.jsoup.nodes.Document doc = Jsoup.parse(getHTML_String(filename), "UTF-8");
+		org.jsoup.nodes.Document doc = null;
+		try {
+			 doc = Jsoup.parse(getHTML_String(filename), "UTF-8", Parser.xmlParser());  // We assume the file we are reading is UTF-8 encoded.  If not, well....
+			 // System.out.println("\n\nNew Table:\n" + doc + "\n\n");
+		}
+		catch (Exception e) {
+			System.err.println("Error parsing html file: " + filename);
+			e.printStackTrace();
+		}
 		return doc;
 	}
 	
@@ -46,7 +55,11 @@ public class FileUtils {
 	public static String getHTML_String(String filename) {
 	    StringBuilder contentBuilder = new StringBuilder();
 	    try {
-	        BufferedReader in = new BufferedReader(new FileReader(filename));
+	    	// We need to make sure to enforce using UTF-8 when parsing the html files..
+	    	// (Note that this assumes the html files are UTF-8 encoded.  If not, we're kinda screwed.)
+	    	BufferedReader in = new BufferedReader(
+	    	        new InputStreamReader(
+	    	            new FileInputStream(filename), StandardCharsets.UTF_8));
 	        String str;
 	        while ((str = in.readLine()) != null) {
 	            contentBuilder.append(str);
@@ -69,6 +82,7 @@ public class FileUtils {
 	public static Document openXMLFile(String filename) {
 		Document doc = null;
 		try {
+			
 			File file = new File(filename);
 			FileInputStream fis = new FileInputStream(file);
 			doc = Jsoup.parse(fis,null,"", Parser.xmlParser());
@@ -94,7 +108,7 @@ public class FileUtils {
 		PrintWriter writer;
 		try {
 			writer = new PrintWriter(file,"UTF-8");
-			writer.write(doc.html() ) ;
+			writer.write(doc.outerHtml() ) ;
 			writer.flush();
 			writer.close();
 
