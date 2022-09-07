@@ -40,6 +40,14 @@ public class SearchSort {
 	 * Calls the init() method of this class with the given &lt;behavior&gt; element as its argument.
 	 * Also sets the tableID value within the class, using the given tablePos value.
 	 * 
+	 * A sample element:
+	 * 
+	 * <pre>
+	 * {@code
+	 *              <behavior paging="true" sorting="true" searching="true" pageSize="5" pageSizeChange="false" />
+	 * }	
+	 * </pre>
+	 * 
 	 * @param behavior - an org.jsoup.nodes.Element from a TableAlterDescriptor element in a TableAlterDescriptors xml file
 	 * @param tablePos - an integer representing the nth table in an html document to alter.
 	 */
