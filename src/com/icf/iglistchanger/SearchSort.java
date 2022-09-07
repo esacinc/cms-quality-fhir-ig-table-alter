@@ -38,7 +38,8 @@ public class SearchSort {
 	                                                                                              "}); }); </script>";
 	/**
 	 * Calls the init() method of this class with the given &lt;behavior&gt; element as its argument.
-	 * Also sets the tableID value within the class, using the given tablePos value.
+	 * Also sets the tableID value within the class, using the given tablePos value. (A table ID string is created by appending the given tablePos value to the string "Table-". This ID is used as the "id" attribute in the table being altered, unless that table already has an "id" attribute.)
+	 * 
 	 * 
 	 * A sample element:
 	 * 
@@ -92,7 +93,7 @@ public class SearchSort {
 	
 	/** 
 	 * To be called after a SearchSort object is instantiated.  Processes the contents of the &lt;behavior&gt; element that was provided at instantiation.
-	 * The give html document and table element are altered during this process.
+	 * The given html document and table element are altered during this process.
 	 * 
 	 * @param theDoc the html document to alter
 	 * @param theTable the table from within the document to alter
