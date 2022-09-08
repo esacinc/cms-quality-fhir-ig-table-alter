@@ -1,0 +1,24 @@
+-classpath
+'C:/Users/42574/.m2/repository/org/jsoup/jsoup/1.9.2/jsoup-1.9.2.jar;C:/Users/42574/.m2/repository/org/json/json/20210307/json-20210307.jar'
+-encoding
+'Cp1252'
+-protected
+-sourcepath
+'C:/ICF-work/Dev/Measures/IGListChanger/src/com/icf'
+-author
+-bottom
+'Copyright &#169; 2022. All rights reserved.'
+-charset
+'UTF-8'
+-d
+'C:/ICF-work/Dev/Measures/IGListChanger/target/site/apidocs/../../../javadocs'
+-docencoding
+'UTF-8'
+-doctitle
+'IGListChanger 0.0.1-SNAPSHOT API'
+-linkoffline
+'https://docs.oracle.com/javase/8/docs/api' 'C:/ICF-work/Dev/Measures/IGListChanger/target/javadoc-bundle-options'
+-use
+-version
+-windowtitle
+'IGListChanger 0.0.1-SNAPSHOT API'
