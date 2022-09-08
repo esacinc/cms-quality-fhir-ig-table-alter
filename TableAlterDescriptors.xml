@@ -5,7 +5,7 @@
         <generatedHTMLFile>C:\ICF-work\Dev\Measures\Ecqm-content-r4-2021\git-myFork\ecqm-content-r4-2021\output\measures.html</generated>
         <outputHTMLFile>measures-new.html</outputHTMLFile>
         <targetTablePos>0</targetTablePos>
-        <behavior paging="true" sorting="true" searching="true" pageSize="5" pageSizeChange="false" />
+        <behavior paging="true" sorting="true" searching="true" pageSize="5" pageSizeChange="false" useOnlineDataTables="true"  />
         <resourceDirectory>C:\ICF-work\Dev\Measures\Ecqm-content-r4-2021\git-myFork\ecqm-content-r4-2021\input\resources\measure</resourceDirectory>
         <oldColumn oldPpos="0" action="keep" resourceField="title"></oldColumn>
         <newColumn afterPos="0" label="CMS ID" resourceField="identifier" subField="value" type="array" nth="" maxLen="" regex=".*FHIR" default="-"></newColumn>
@@ -24,7 +24,8 @@
          searching      -  if present, and if value is 'true', then add a search bar above the table to enable searching table contents
          paging         -  if present, and if value is 'true', then add pagination to the table
          pageSize       -  if present, and if paging is 'true', then sets the size of the pages (number of rows) to display per page. Default is 10
-         pageSizeChange -  if paging is 'true', and if present and value is 'true', then provides a drop-down list allowing user to change page size.  
+         pageSizeChange -  if paging is 'true', and if present and value is 'true', then provides a drop-down list allowing user to change page size. 
+         useOnlineDataTables - if 'true', then load jQuery DataTables library and css from online source. Otherwise, load from local "assets/js" and "assets/css" folders. 
     resourceDirectory   -  is the full pathname of the directory that holds the resource json files that were used to populate the table being altered. These resource files are used to populate any new columns added to the table.    
     oldColumn           -  is a specification of how to handle existing columns in the table. The attributes in this element dictate how the existing column is to be handled:  
          oldPos         -  indicates the column's position in the original table.  0 = first column, 1 = second column, and so on.
@@ -51,7 +52,7 @@
         <generatedHTMLFile>C:\ICF-work\Dev\Measures\Ecqm-content-r4-2021\git-myFork\ecqm-content-r4-2021\output\measures.html</generatedHTMLFile>
         <outputHTMLFile>C:\ICF-work\Dev\Measures\Ecqm-content-r4-2021\git-myFork\ecqm-content-r4-2021\output\measuresNew.html</outputHTMLFile>
         <targetTablePos>0</targetTablePos>
-        <behavior paging="true" sorting="true" searching="true" pageSize="5" pageSizeChange="false" />
+        <behavior paging="true" sorting="true" searching="true" pageSizxe="5" pageSizeChange="true" useOnlineDataTables="false" />
         <resourceDirectory>C:\ICF-work\Dev\Measures\Ecqm-content-r4-2021\git-myFork\ecqm-content-r4-2021\input\resources\measure</resourceDirectory>
         <oldColumn oldPos="0" action="keep" resourceField="title"></oldColumn>
         <newColumn afterPos="0" label="CMS ID" resourceField="identifier" subField="value" type="array" nth="" maxLen="" regex=".*FHIR" default="-"></newColumn>

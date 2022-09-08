@@ -39,7 +39,7 @@ Below is an example of a control file containing a single table-descriptor that 
       - **paging**         if present, and if value is *true*, then add pagination to the table  
       - **pageSize**       if present, and if paging is *true*, then sets the size of the pages (number of rows) to display per page. Default is 10  
       - **pageSizeChange** if paging is *true*, and if present and value is *true*, then provides a drop-down list allowing user to change page size.    
-
+      - **useOnlineDataTables** if *true*, then load jQuery DataTables library and css from online source. Otherwise, load from local "assets/js" and "assets/css" folders.  
 - **resourceDirectory** is the full pathname of the directory that holds the resource json files that were used to populate the table being altered. These resource files are used to populate any new columns added to the table.    
 - **oldColumn** is a specification of how to handle existing columns in the table. The attributes in this element dictate how the existing column is to be handled:  
      - **oldPos** indicates the column's position in the original table.  0 = first column, 1 = second column, and so on.
