@@ -5,23 +5,23 @@ import org.jsoup.nodes.Element;
 
 /**
  * This class manages the addition of search and sort capabilities to a table element.  It includes the jquery and jquery DataTables libraries and stylesheets to the html page if not already included. <br>
- * The behavior of this class is governed by the attributes found in the &lt;behavior&gt; element of a TableAlterDescrition element.<br><br>
+ * The behavior of this class is governed by the attributes found in the &lt;addOns&gt; element of a TableAlterDescrition element.<br><br>
  * 
-  	 * A sample behavor element:
+  	 * A sample addOns element:
 	 * 
 	 * <pre>
 	 * {@code
-	 *              <behavior paging="true" sorting="true" searching="true" pageSize="5" pageSizeChange="false" useOnlineDataTables="true" />
+	 *              <addOns paging="true" ordering="true" searching="true" pageLength="5" lengthChange="false" useOnlineDataTables="true" />
 	 * }	
 	 * </pre>
 	 * 
- * <b>behavior</b>  if present, specifies how to alter the table to include sorting, pagination and/or search capabilities (using the <b>DataTables</b> jquery plugin.) <ul>
- *  <li>       <b>sorting</b>        -  if present, and if value is <i>true</i>, then add ability to sort columns by clicking on the column header<br>
- *  <li>       <b>searching</b>      -  if present, and if value is <i>true</i>, then add a search bar above the table to enable searching table contents<br>
- *  <li>       <b>paging</b>         -  if present, and if value is <i>true</i>, then add pagination to the table<br>
- *  <li>       <b>pageSize</b>       -  if present, and if paging is <i>true</i>, then sets the size of the pages (number of rows) to display per page. Default is 10<br>
- *   <li>      <b>pageSizeChange</b> -  if paging is <i>true</i>, and if present and value is <i>true</i>, then provides a drop-down list allowing user to change page size.<br>  
- *   <li>      <b>useOnlineDataTables</b> - if <i>true</i>, then load jQuery DataTables library and css from online source. Otherwise, load from local "assets/js" and "assets/css" folders.</ul>
+ * <b>addOns</b>  if present, specifies how to alter the table to include sorting, pagination and/or search capabilities (using the <b>DataTables</b> jquery plugin.) <ul>
+ *  <li>       <b>ordering</b>         -  if present, and if value is <i>true</i>, then add ability to sort columns by clicking on the column header<br>
+ *  <li>       <b>searching</b>        -  if present, and if value is <i>true</i>, then add a search bar above the table to enable searching table contents<br>
+ *  <li>       <b>paging</b>           -  if present, and if value is <i>true</i>, then add pagination to the table<br>
+ *  <li>       <b>pageLength</b>       -  if present, and if paging is <i>true</i>, then sets the size of the pages (number of rows) to display per page. Default is 10<br>
+ *  <li>      <b>lengthChange</b>     -  if paging is <i>true</i>, and if present and value is <i>true</i>, then provides a drop-down list allowing user to change page size.<br>  
+ *  <li>      <b>useOnlineDataTables</b> - if <i>true</i>, then load jQuery DataTables library and css from online source. Otherwise, load from local "assets/js" and "assets/css" folders.</ul>
  * 
  * <p>
  * In general, the process method of this class will: <br><br>
@@ -31,7 +31,7 @@ import org.jsoup.nodes.Element;
 	 * Add a 'documentReady' script that initializes the table to be edited with DataTables capabilities.<br><br> 
 	 * 
 	 * The source javascript and css files for the DataTables library are loaded from either local folders, or via links to online sources. 
-	 * This is controlled by the "useOnlineDataTables" attribute of the &lt;behavior&gt; element in the current TableAlterDescriptor. Typically one would set this attribute to 'false', forcing
+	 * This is controlled by the "useOnlineDataTables" attribute of the &lt;addOns&gt; element in the current TableAlterDescriptor. Typically one would set this attribute to 'false', forcing
 	 * the DataTable files to be loaded from the local <i>assets/js</i> and <i>assets/css</i> folders.  If set to 'true', then the javascript and css files are loaded from:
 	 * <ul>
 	 * <li>https://cdn.datatables.net/1.12.1/js/jquery.dataTables.min.js</li>
@@ -54,7 +54,7 @@ public class SearchSort {
 	private boolean doSearch = false;            // If true, add search capabilities to a table
 	private boolean doPage = false;              // If true, add pagination to a table
 	private boolean allowSizeChange = false;     // If true, allows user to change the pages size of the displayed table when pagination is enabled.
-	private boolean useOnline = false;           // User can specify via the <behavior> useOnlineDataTables attribute whether to load jQuery DataTables from online, or from local source.
+	private boolean useOnline = false;           // User can specify via the <addOns> useOnlineDataTables attribute whether to load jQuery DataTables from online, or from local source.
 	private int pageSize = 10;                   // If pagination enabled, this specifies the size (in table rows) of each page to display
 	private String tableID = "";                 // The "id" attribute of the table we are altering
 	private String tableClass = "display";       // The css "class" attribute of the table we are altering. Note: This value is appended to any existing "class" attribute value.
@@ -78,7 +78,7 @@ public class SearchSort {
 	                                                                                              "lengthMenu: [ %d, 10, 25, 50, 75, 100 ]" +
 	                                                                                              "}); }); </script>";
 	/**
-	 * Calls the init() method of this class with the given &lt;behavior&gt; element as its argument.
+	 * Calls the init() method of this class with the given &lt;addOns&gt; element as its argument.
 	 * Also sets the tableID value within the class, using the given tablePos value. (A table ID string is created by appending the given tablePos value to the string "Table-". This ID is used as the "id" attribute in the table being altered, unless that table already has an "id" attribute.)
 	 * 
 	 * 
@@ -86,22 +86,22 @@ public class SearchSort {
 	 * 
 	 * <pre>
 	 * {@code
-	 *              <behavior paging="true" sorting="true" searching="true" pageSize="5" pageSizeChange="false" useOnlineDataTables="true" />
+	 *              <addOns paging="true" ordering="true" searching="true" pageLength="5" lengthChange="false" useOnlineDataTables="true" />
 	 * }	
 	 * </pre>
 	 * 
-	 * @param behavior - an org.jsoup.nodes.Element from a TableAlterDescriptor element in a TableAlterDescriptors xml file
+	 * @param addOns - an org.jsoup.nodes.Element from a TableAlterDescriptor element in a TableAlterDescriptors xml file
 	 * @param tablePos - an integer representing the nth table in an html document to alter.
 	 */
-	public SearchSort(Element behavior, int tablePos) {
+	public SearchSort(Element addOns, int tablePos) {
 		super();
 		this.tableID = "Table-" + tablePos;
-		init(behavior);
+		init(addOns);
 	}
 	
 	
 	/** 
-	 * To be called after a SearchSort object is instantiated.  Processes the contents of the &lt;behavior&gt; element that was provided at instantiation.
+	 * To be called after a SearchSort object is instantiated.  Processes the contents of the &lt;addOns&gt; element that was provided at instantiation.
 	 * The given html document and table element are altered during this process. <br><br>
 	 * See "com.icf.iglistchanger.Controller" for the calling object for this object.
 	 * 
@@ -119,28 +119,28 @@ public class SearchSort {
 	
 
 	/*
-	  Given a <behavior> element, initializes the method variables within the SearchSort instance with the values from the element.
+	  Given a <addOns> element, initializes the method variables within the SearchSort instance with the values from the element.
 
-	   <behavior paging="true" sorting="true" searching="true" pageSize="5" pageSizeChange="false" useOnlineDataTables="true" />
+	   <addOns paging="true" ordering="true" searching="true" pageLength="5" lengthChange="false" useOnlineDataTables="true" />
 	*/
-	private void init(Element behavior) {
-		// <behavior paging="false" pageSize="5" pageSizeChange="true" sort="true" search="true" />
+	private void init(Element addOns) {
+		// <addOns paging="false" pageLength="5" lengthChange="true" ordering="true" searching="true" />
 		
-		// Defaults are all set to do nothing if no <behavior> element is provided.
-		if (behavior != null) {
-			this.doPage = (behavior.attr("paging").equalsIgnoreCase("true"));
-			this.doSearch = (behavior.attr("searching").equalsIgnoreCase("true"));
-			this.doSort = (behavior.attr("sorting").equalsIgnoreCase("true"));
+		// Defaults are all set to do nothing if no <addOns> element is provided.
+		if (addOns != null) {
+			this.doPage = (addOns.attr("paging").equalsIgnoreCase("true"));
+			this.doSearch = (addOns.attr("searching").equalsIgnoreCase("true"));
+			this.doSort = (addOns.attr("ordering").equalsIgnoreCase("true"));
 			this.isActive = this.doPage || this.doSearch || this.doSort;
-			this.useOnline = (behavior.attr("useOnlineDataTables").equalsIgnoreCase("true"));
+			this.useOnline = (addOns.attr("useOnlineDataTables").equalsIgnoreCase("true"));
 			// If paging is enabled, then set up the related variables...
 			if (this.doPage) { 
-				this.allowSizeChange = (behavior.attr("pageSizeChange").equalsIgnoreCase("true"));
+				this.allowSizeChange = (addOns.attr("lengthChange").equalsIgnoreCase("true"));
 				try {
-					this.pageSize = Integer.parseInt(behavior.attr("pageSize"));
+					this.pageSize = Integer.parseInt(addOns.attr("pageLength"));
 				}
 				catch (Exception e) {
-					System.err.println("pageSize attribute of <behavior> element not found or not an integer. Defaults to " + this.pageSize + " table rows per page.");
+					System.err.println("pageSize attribute of <addOns> element not found or not an integer. Defaults to " + this.pageSize + " table rows per page.");
 				}
 			}
 		}	
@@ -154,7 +154,7 @@ public class SearchSort {
 	  Adds a 'documentReady' script that initializes the table to be edited with DataTables capabilities. 
 	  
 	  The source javascript and css files for the DataTables library are loaded from either local folders, or via links to online sources. 
-	  This is controlled by the "useOnlineDataTables" attribute of the<behavior>; element in the current TableAlterDescriptor. Typically one would set this attribute to 'false', forcing
+	  This is controlled by the "useOnlineDataTables" attribute of the<addOns>; element in the current TableAlterDescriptor. Typically one would set this attribute to 'false', forcing
 	  the DataTable files to be loaded from the local assets/js and assets/css folders.  If set to 'true', then the javascript and css files are loaded from:
 	  
 	  https://cdn.datatables.net/1.12.1/js/jquery.dataTables.min.js

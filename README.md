@@ -17,7 +17,7 @@ Below is an example of a control file containing a single table-descriptor that 
         <generatedHTMLFile>C:\ICF-work\Dev\Measures\Ecqm-content-r4-2021\git-myFork\ecqm-content-r4-2021\output\measures.html</generatedHTMLFile>
         <outputHTMLFile>measures-new.html</outputHTMLFile>
         <targetTablePos>0</targetTablePos>
-        <behavior paging="true" sorting="true" searching="true" pageSize="5" pageSizeChange="false" />
+        <behavior paging="true" ordering="true" searching="true" pageLength="5" lengthChange="false" useOnlineDataTables="true"/>
         <resourceDirectory>C:\ICF-work\Dev\Measures\Ecqm-content-r4-2021\git-myFork\ecqm-content-r4-2021\input\resources\measure</resourceDirectory>
         <oldColumn oldPos="0" action="keep" resourceField="title"></oldColumn>
         <newColumn afterPos="0" label="CMS ID" resourceField="identifier" subField="value" type="array" nth="" maxLen="" regex=".*FHIR" default="-"></newColumn>
@@ -34,11 +34,11 @@ Below is an example of a control file containing a single table-descriptor that 
 - **outputHTMLFfile** This is an optional element. If provided, then the edited html document will be written to a file with this full or relative pathname.  If not provided, the edited html document will overwrite the original file (indicated by the generatedHTMLFile pathname).  
 - **tagetTablePos** indicates the nth table in the html file to alter.  (If the file only has one table, this value should be 0)
 - **behavior**  if present, specifies how to alter the table to include sorting, pagination and/or search capabilities (using the **DataTables** jquery plugin.)  
-      - **sorting**        if present, and if value is *true*, then add ability to sort columns by clicking on the column header  
+      - **ordering**        if present, and if value is *true*, then add ability to sort columns by clicking on the column header  
       - **searching**      if present, and if value is *true*, then add a search bar above the table to enable searching table contents  
       - **paging**         if present, and if value is *true*, then add pagination to the table  
-      - **pageSize**       if present, and if paging is *true*, then sets the size of the pages (number of rows) to display per page. Default is 10  
-      - **pageSizeChange** if paging is *true*, and if present and value is *true*, then provides a drop-down list allowing user to change page size.    
+      - **pageLength**       if present, and if paging is *true*, then sets the size of the pages (number of rows) to display per page. Default is 10  
+      - **lengthChange** if paging is *true*, and if present and value is *true*, then provides a drop-down list allowing user to change page size.    
       - **useOnlineDataTables** if *true*, then load jQuery DataTables library and css from online source. Otherwise, load from local "assets/js" and "assets/css" folders.  
 - **resourceDirectory** is the full pathname of the directory that holds the resource json files that were used to populate the table being altered. These resource files are used to populate any new columns added to the table.    
 - **oldColumn** is a specification of how to handle existing columns in the table. The attributes in this element dictate how the existing column is to be handled:  
@@ -120,6 +120,7 @@ References
   - HL7 IG Tooling documentation:  https://confluence.hl7.org/display/FHIR/IG+Publisher+Documentation  
   - HL7 IG Publisher: https://github.com/HL7/fhir-ig-publisher  
   - eCQM Measure IG tooling, 2021: https://github.com/cqframework/ecqm-content-r4-2021 
+  - DataTables https://datatables.net/
   
   
   
