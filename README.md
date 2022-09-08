@@ -17,7 +17,7 @@ Below is an example of a control file containing a single table-descriptor that 
         <generatedHTMLFile>C:\ICF-work\Dev\Measures\Ecqm-content-r4-2021\git-myFork\ecqm-content-r4-2021\output\measures.html</generatedHTMLFile>
         <outputHTMLFile>measures-new.html</outputHTMLFile>
         <targetTablePos>0</targetTablePos>
-        <behavior paging="true" sorting="true" searching="true" pageSize="5" pageSizeChange="false" />
+        <behavior paging="true" sorting="true" searching="true" pageSize="5" pageSizeChange="false" useOnlineDataTables="true"/>
         <resourceDirectory>C:\ICF-work\Dev\Measures\Ecqm-content-r4-2021\git-myFork\ecqm-content-r4-2021\input\resources\measure</resourceDirectory>
         <oldColumn oldPos="0" action="keep" resourceField="title"></oldColumn>
         <newColumn afterPos="0" label="CMS ID" resourceField="identifier" subField="value" type="array" nth="" maxLen="" regex=".*FHIR" default="-"></newColumn>
@@ -120,6 +120,7 @@ References
   - HL7 IG Tooling documentation:  https://confluence.hl7.org/display/FHIR/IG+Publisher+Documentation  
   - HL7 IG Publisher: https://github.com/HL7/fhir-ig-publisher  
   - eCQM Measure IG tooling, 2021: https://github.com/cqframework/ecqm-content-r4-2021 
+  - DataTables https://datatables.net/
   
   
   
