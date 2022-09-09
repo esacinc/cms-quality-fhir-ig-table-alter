@@ -52,7 +52,7 @@
         <generatedHTMLFile>C:\ICF-work\Dev\Measures\Ecqm-content-r4-2021\git-myFork\ecqm-content-r4-2021\output\measures.html</generatedHTMLFile>
         <outputHTMLFile>C:\ICF-work\Dev\Measures\Ecqm-content-r4-2021\git-myFork\ecqm-content-r4-2021\output\measuresNew.html</outputHTMLFile>
         <targetTablePos>0</targetTablePos>
-        <addOns paging="true" ordering="true" searching="true" pageLength="5" lengthChange="true" useOnlineDataTables="false" />
+        <addOns paging="true" ordering="true" searching="true" pageLength="5" lengthChange="true" useOnlineDataTables="true" />
         <resourceDirectory>C:\ICF-work\Dev\Measures\Ecqm-content-r4-2021\git-myFork\ecqm-content-r4-2021\input\resources\measure</resourceDirectory>
         <oldColumn oldPos="0" action="keep" resourceField="title"></oldColumn>
         <newColumn afterPos="0" label="CMS ID" resourceField="identifier" subField="value" type="array" nth="" maxLen="" regex=".*FHIR" default="-"></newColumn>

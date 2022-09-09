@@ -143,7 +143,11 @@ public class SearchSort {
 					System.err.println("pageSize attribute of <addOns> element not found or not an integer. Defaults to " + this.pageSize + " table rows per page.");
 				}
 			}
-		}	
+			System.out.println("    Table add ons: " + addOns.toString());
+		}
+		else {
+			System.out.println("    No additional add ons. (<addOns> element not found.)");
+		}
 	}
 
 	

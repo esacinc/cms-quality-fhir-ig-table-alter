@@ -40,7 +40,7 @@ public class FileUtils {
 			 // System.out.println("\n\nNew Table:\n" + doc + "\n\n");
 		}
 		catch (Exception e) {
-			System.err.println("Error parsing html file: " + filename);
+			System.err.println("    Error parsing html file: '" + filename + "' " + e.getMessage());
 			e.printStackTrace();
 		}
 		return doc;
@@ -66,7 +66,7 @@ public class FileUtils {
 	        }
 	        in.close();
 	    } catch (IOException e) {
-	    	System.err.println("Exception reading html file: " + filename);
+	    	System.err.println("    Exception reading html file: '" + filename + "' " + e.getMessage());
 	    	e.printStackTrace();
 	    }
 	    return contentBuilder.toString();
@@ -88,7 +88,7 @@ public class FileUtils {
 			doc = Jsoup.parse(fis,null,"", Parser.xmlParser());
 		}
 		catch (Exception e) {
-			System.err.println("Exception reading XML file: " + filename);
+			System.err.println("    Exception reading XML file: '" + filename + "' " + e.getMessage());
 			e.printStackTrace();
 		}
 		return doc;
@@ -113,7 +113,7 @@ public class FileUtils {
 			writer.close();
 
 		} catch (FileNotFoundException | UnsupportedEncodingException e) {
-			System.err.println("Exception writing html file: " + filename);
+			System.err.println("    Exception writing html file: '" + filename + "' " + e.getMessage());
 			e.printStackTrace();
 			isOk = false;
 		}
@@ -146,7 +146,7 @@ public class FileUtils {
 	 * Given a file pathname, reads the contents of the file as a JSON object and returns that object.
 	 * 
 	 * @param filename - pathname of JSON file to read
-	 * @return JSONObject resulting for reading the given filename.
+	 * @return JSONObject resulting from reading JSON data from the given filename.
 	 */
 	public static JSONObject parseJsonFile(String filename) {
 		 JSONObject jsonContent = null;
@@ -155,7 +155,7 @@ public class FileUtils {
             String content = new String(Files.readAllBytes(Paths.get(file.toURI())));
             jsonContent = new JSONObject(content);
          } catch (IOException e) {
-        	 System.err.println("Exception reading json file: " + filename);
+        	 System.err.println("    Exception reading json file:  '" + filename + "' " + e.getMessage());
             e.printStackTrace();
         }
 		return jsonContent;

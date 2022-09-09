@@ -112,7 +112,7 @@ public class Controller {
 		boolean isOK = true;
 		this.currDescriptorPos++;
 		Elements descriptors = this.controlXML.getElementsByTag("table-descriptor");
-		if (this.currDescriptorPos >= descriptors.size()) {
+		if (descriptors == null || descriptors.isEmpty() || this.currDescriptorPos >= descriptors.size()) {
 			isOK = false;
 		}
 		else {
@@ -127,23 +127,31 @@ public class Controller {
 	 * based on the new-cols specs from the descriptor.
 	 */
 	public void processTableHeader() {
-		Element header = this.oldTable.getElementsByTag("thead").get(0);   // Assumes the source table we are working with has a single header element.
+		if (this.oldTable == null) {
+			return;
+		}
+		Element header =  this.getFirstElementWithTag(oldTable, "thead"); //.oldTable.getElementsByTag("thead").get(0);   // Assumes the source table we are working with has a single header element.
 		Element newHeader = header.clone();                                // Clone the header, and empty the clone's children
 		newHeader.empty();
-		Element row = header.getElementsByTag("tr").get(0);
+		Element row =  this.getFirstElementWithTag(header, "tr"); //   header.getElementsByTag("tr").get(0);
 		Element newRow = row.clone();                                      // Get the single row (<tr>) from the source table header
 		newRow.empty();                                                    // Empty the clone row's children. (We'll re-populate from the source, with changes.)
 		Elements oldCols = row.getElementsByTag("th");                     // Get the header column elements from the source
 		for (int i = 0; i < oldCols.size(); i++ ) {                        // For each header column, if we want to keep the column, copy/clone from the source to the new header row.
 			Element oldCol = oldCols.get(i);
-			Element oldColSpec = this.oldColSpecs.get(i);
-			if ("keep".equalsIgnoreCase(oldColSpec.attr("action"))) {
-				System.out.println("    Keeping column " + i + ", " + oldCol.ownText());
-				Element newCol = oldCol.clone();
-				newRow.appendChild(newCol);	
+			try {
+				Element oldColSpec = this.oldColSpecs.get(i);
+				if ("keep".equalsIgnoreCase(oldColSpec.attr("action"))) {
+					System.out.println("    Keeping column " + i + ", " + oldCol.ownText());
+					Element newCol = oldCol.clone();
+					newRow.appendChild(newCol);	
+				}
+				else if ("remove".equalsIgnoreCase(oldColSpec.attr("action"))) {
+					System.out.println("    Removing column " + i + ", " + oldCol.ownText());
+				}
 			}
-			else if ("remove".equalsIgnoreCase(oldColSpec.attr("action"))) {
-				System.out.println("    Removing column " + i + ", " + oldCol.ownText());
+			catch (Exception e) {
+				// If no old column specs were found, then we should just skip this one and move on.
 			}
 			Elements newCols = getNewColumnSpecs(String.format("%d", i));
 			for (Element newColSpec : newCols) {                     // Now see if there are any new columns to add after the current column position we are working on (via the after-pos column specs)
@@ -157,8 +165,15 @@ public class Controller {
 		this.newTable.appendChild(newHeader);                        // Add the new header to the new table
 		//System.out.println("\n\n" + this.newTable + "\n\n");
 		
-		SearchSort sort = new SearchSort(this.currDescriptor.getElementsByTag("addOns").get(0), this.targetTablePos);
-		sort.process(this.htmlDoc, this.newTable);
+		// 
+		Element addOn = this.getFirstElementWithTag(currDescriptor, "addOns"); //.currDescriptor..getElementsByTag("addOns");
+		if (addOn == null ) {
+			System.out.println("    No additional add ons. (<addOns> element not found.)");
+		}
+		else {
+			SearchSort sort = new SearchSort(addOn, this.targetTablePos);
+			sort.process(this.htmlDoc, this.newTable);
+		}
 		
 
 		
@@ -171,8 +186,12 @@ public class Controller {
 	 * the corresponding resource json object based on the new-column spec data for each new column.
 	 */
 	public void processTableRows() {
-		Element body = this.oldTable.getElementsByTag("tbody").get(0);   // Assumes the source table we are working with has a single tbody element.
-		Element newBody = body.clone();                                  // Clone the body, and empty the clone's children
+		if (oldTable == null) {
+			return;
+		}
+		Element body =  this.getFirstElementWithTag(oldTable, "tbody"); //.oldTable.getElementsByTag("tbody").get(0);   // Assumes the source table we are working with has a single tbody element.
+		Element newBody = null;
+		newBody = body.clone();                                  // Clone the body, and empty the clone's children
 		newBody.empty();
 		Elements rows = body.getElementsByTag("tr");                     // Now cycle through each row of the source table...
 		for (int r=0; r < rows.size(); r++) {
@@ -185,12 +204,18 @@ public class Controller {
 
 			for (int i = 0; i < oldCols.size(); i++ ) {                  // For each column in the source row, if we want to keep the column, copy/clone from the source to the new row.       
 				Element oldCol = oldCols.get(i);
-				Element oldColSpec = this.oldColSpecs.get(i);
-				if ("keep".equalsIgnoreCase(oldColSpec.attr("action"))) {
-					//System.out.println("Keeping col " + i + ", " + oldCol.ownText());
-					Element newCol = oldCol.clone();
-					newRow.appendChild(newCol);	
+				try {
+					Element oldColSpec = this.oldColSpecs.get(i);
+					if ("keep".equalsIgnoreCase(oldColSpec.attr("action"))) {
+						//System.out.println("Keeping col " + i + ", " + oldCol.ownText());
+						Element newCol = oldCol.clone();
+						newRow.appendChild(newCol);	
+					}
 				}
+				catch (Exception e) {
+					// If no old column specs were found, then we should just skip this one and move on.
+				}
+
 				Elements newCols = getNewColumnSpecs(String.format("%d", i));
 				for (Element newColSpec : newCols) {                     // Now see if there are any new columns to add after the current column position we are working on (via the after-pos column specs)
 					String fieldVal = getResourceFieldValue(resource, newColSpec);
@@ -209,8 +234,10 @@ public class Controller {
 	 * Replace the oldTable element in the original html document with the newTable element (that we've built in the processTableHeader() and processTableRows() methods).
 	 */
 	public void updateOriginalDocument() {
-		this.oldTable.replaceWith(this.newTable);
-		writeHTMLFile(this.htmlDoc);
+		if (this.oldTable != null && this.newTable != null) {
+			this.oldTable.replaceWith(this.newTable);
+			writeHTMLFile(this.htmlDoc);
+		}
 	}
 	
 	/*
@@ -237,11 +264,29 @@ public class Controller {
 		  */
 
 		this.currDescriptor = el;  // Save the current xml element
-		System.out.println("\n\nProcessing " + getControlValue("generatedHTMLFile"));
+		String targetFilename =  getControlValue("generatedHTMLFile");
+		System.out.println("\n\nProcessing file '" + targetFilename + "'");
+		if (targetFilename == null || targetFilename.isEmpty()) {
+			System.err.println("   No file found. Check '<generatedHTMLFile>' element");
+			return;
+		}
 
 		this.htmlDoc = FileUtils.parseXHtmlFile(getControlValue("generatedHTMLFile")); // open the actual html file (generated by tooling) as an html Document
-		this.targetTablePos = Integer.parseInt(getControlValue("targetTablePos"));     // The actual html file may have multiple tables. This tells us which one we will alter
+		if (this.htmlDoc == null) {
+			System.err.println("   No file found. Check '<generatedHTMLFile>' element");
+			return;
+		}
+		try {
+			this.targetTablePos = Integer.parseInt(getControlValue("targetTablePos"));     // The actual html file may have multiple tables. This tells us which one we will alter
+		}
+		catch (Exception e) {
+			System.err.println("    Problem determining targetTablePos value. It must be an integer.");
+			this.targetTablePos = -1;
+		}
 		this.oldTable = getTargetTable();                                              // The table element from the target html file, determined by the nth position, above
+		if (this.oldTable == null) {
+			return;  // Whaddya gonna do if there's no table to alter?
+		}
 		this.newTable = this.oldTable.clone();                                         // A clone of the original table element - we will actually edit this clone.
 		this.resourceDir = getControlValue("resourceDirectory");                       // where the resource files are located
 		this.resourceFilenames = FileUtils.getDirFiles(this.resourceDir);              // the list of resource filenames found in the above dir
@@ -257,7 +302,7 @@ public class Controller {
 			}
 		}
 		else {
-			System.err.println("** No resources files found at: " + this.resourceDir + "\n   Table-Descriptor Default column values will be used throughout. See " + controlFilename);
+			System.err.println("    ** No resources files found at: " + this.resourceDir + "\n   Table-Descriptor Default column values will be used throughout. See " + controlFilename);
 		}
 
 		
@@ -271,7 +316,7 @@ public class Controller {
 			return (this.currDescriptor == null)? null : this.currDescriptor.getElementsByTag(tagname).get(0).ownText();
 		}
 		catch (Exception e) {
-			return "";
+			return ""; // Since all tags are optional in the descriptor, no really an error if not found. Just return "";
 		}
 	}
 	
@@ -279,17 +324,18 @@ public class Controller {
 	  Returns all of the 'old column' specs (i.e. spec for the current columns in the html table we are editing)
     */
 	private Elements getOldColumnSpecs() {
-		return (this.currDescriptor == null)? null: this.currDescriptor.getElementsByAttribute("oldPos");
-
+		Elements els = null;
+		try {
+			els = (this.currDescriptor == null)? null: this.currDescriptor.getElementsByAttribute("oldPos");
+		}
+		catch (Exception e) {
+		}
+		if (els == null || els.isEmpty()) {
+			System.err.println("    No old column elements found in descriptor. Are you sure this is correct?");
+		}
+		return els;
 	}
 	
-	/*
-	  Returns all of the 'new column' specs (i.e. the specs for new columns to add to the html table we are editing)
-	*/
-	private Elements getNewColumnSpecs() {
-		return (this.currDescriptor == null)? null: this.currDescriptor.getElementsByAttribute("afterPos");
-
-	}
 	
 	/*
 	  Returns all of the 'new column' specs to be added after the given column position (i.e. the specs for new columns to add to the html table we are editing)
@@ -306,7 +352,19 @@ public class Controller {
 	private Element getTargetTable() {
 		Element table = null;
 		if (this.htmlDoc != null) {
-			table = this.htmlDoc.getElementsByTag("table").get(this.targetTablePos);
+			Elements tables = this.htmlDoc.getElementsByTag("table");
+			if (tables == null || tables.isEmpty()) {
+				System.err.println("    No table elements were found in this html file.");
+			}
+			else {
+				try {
+					table = tables.get(this.targetTablePos);
+				}
+				catch (Exception e) {
+					System.err.println("    The target table position, " + targetTablePos + " is invalid given the number of tables in the file, " + tables.size());
+				}
+			}
+			
 		}
 		return table;
 	}
@@ -349,7 +407,7 @@ public class Controller {
 					val =  resource.get(field).toString(); 
 				}
 				catch (Exception e) {
-					System.err.println("String field error: " + e.getMessage() + "\n    Spec: " + colSpec);
+					System.err.println("    String field error: " + e.getMessage() + "\n    Spec: " + colSpec);
 				}
 				 break;
 			case "object" : // If the field value is an object, return the subfield value within that object
@@ -358,7 +416,7 @@ public class Controller {
 					val =  obj.get(subField).toString();
 				}
 				catch (Exception e) {
-					System.err.println("Object field error: " + e.getMessage() + "\n    Spec: " + colSpec);
+					System.err.println("    Object field error: " + e.getMessage() + "\n    Spec: " + colSpec);
 					// problem, move on
 				}
 				break;
@@ -371,7 +429,7 @@ public class Controller {
 						val = obj.get(subField).toString();
 					}
 					catch (Exception e) {
-						System.err.println("Array[first] field error: " + e.getMessage() + "\n    Spec: " + colSpec);
+						System.err.println("    Array[first] field error: " + e.getMessage() + "\n    Spec: " + colSpec);
 						// problem, move on
 					}
 				}
@@ -382,7 +440,7 @@ public class Controller {
 						val =  obj.get(subField).toString();
 					}
 					catch (Exception e) {
-						System.err.println("Array[last] field error: " + e.getMessage() + "\n    Spec: " + colSpec);
+						System.err.println("    Array[last] field error: " + e.getMessage() + "\n    Spec: " + colSpec);
 						// problem, move on
 					}
 				}
@@ -394,7 +452,7 @@ public class Controller {
 						val =  obj.get(subField).toString();
 					}
 					catch (Exception e) {
-						System.err.println("Array[nth] field error: " + e.getMessage() + "\n    Spec: " + colSpec);
+						System.err.println("    Array[nth] field error: " + e.getMessage() + "\n    Spec: " + colSpec);
 						// Obviously, the value of nth isn't an integer, so do nothing.
 					}
 				}
@@ -412,7 +470,7 @@ public class Controller {
 								}
 							}
 							catch (Exception e) {
-								System.err.println("Array[maxLen] field error: " + e.getMessage() + "\n    Spec: " + colSpec);
+								System.err.println("    Array[maxLen] field error: " + e.getMessage() + "\n    Spec: " + colSpec);
 								// failed seeing if the object's subField was a string of a given length, so do nothing, and on to the next obj in the array.
 							}
 						}
@@ -430,12 +488,13 @@ public class Controller {
 								}
 							}
 							catch (Exception e) {
-								System.err.println("Array[regex] field error: " + e.getMessage() + "\n    Spec: " + colSpec);
+								System.err.println("    Array[regex] field error: " + e.getMessage() + "\n    Spec: " + colSpec);
 								// failed seeing if the object's subField was a string that matches the regex, so do nothing, and on to the next obj in the array.
 							}
 						}
 				}
 			 break;
+			 default: System.err.println("    The field type of '" + fType + "' of field '" + field + "' is not recognized. Is should be one of 'string', 'object', or 'array'"); break;
 		}
 		return val; // Note: if none of the cases above fired, then val is still set to the colSpec's default value
 	}
@@ -448,5 +507,16 @@ public class Controller {
 	private boolean writeHTMLFile(Document doc) {
 		System.out.println("Writing document to: " +this.outputHTMLFilename );
 		return FileUtils.writeXHtmlFile(doc, this.outputHTMLFilename);
+	}
+	
+	// Returns the first Element of tagName within the given target Element. If no is found, returns null;
+	private Element getFirstElementWithTag(Element target, String tagName) {
+		Elements els = target.getElementsByTag(tagName);
+		if (els == null || els.isEmpty()) {
+			return null;
+		}
+		else {
+			return els.get(0);
+		}
 	}
 }
