@@ -140,7 +140,7 @@ public class SearchSort {
 					this.pageSize = Integer.parseInt(addOns.attr("pageLength"));
 				}
 				catch (Exception e) {
-					System.err.println("pageSize attribute of <addOns> element not found or not an integer. Defaults to " + this.pageSize + " table rows per page.");
+					System.err.println("    WARNING: pageSize attribute of <addOns> element not found or not an integer. Defaults to " + this.pageSize + " table rows per page.");
 				}
 			}
 			System.out.println("    Table add ons: " + addOns.toString());
@@ -201,6 +201,7 @@ public class SearchSort {
 			}
 			String newClass = theTable.attr("class") + " " + this.tableClass;  
 			theTable.attr("class", newClass);
+			
 	}
 	
 	/*

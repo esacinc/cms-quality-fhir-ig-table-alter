@@ -18,7 +18,9 @@ Below is an example of a control file containing a single table-descriptor that 
         <outputHTMLFile>measures-new.html</outputHTMLFile>
         <targetTablePos>0</targetTablePos>
         <addOns paging="true" ordering="true" searching="true" pageLength="5" lengthChange="false" useOnlineDataTables="true"/>
-        <resourceDirectory>C:\ICF-work\Dev\Measures\Ecqm-content-r4-2021\git-myFork\ecqm-content-r4-2021\input\resources\measure</resourceDirectory>
+        <headerStyle>color:white;</headerStyle>
+        <headerClass>navbar navbar-inverse</headerClass>            
+        <resourceDirectory>C:\ICF-work\Dev\Measures\Ecqm-content-r4-2021\git-myFork\ecqm-content-r4-2021\input\resources\measure</resourceDirectory>       
         <oldColumn oldPos="0" action="keep" resourceField="title"></oldColumn>
         <newColumn afterPos="0" label="CMS ID" resourceField="identifier" subField="value" type="array" nth="" maxLen="" regex=".*FHIR" default="-"></newColumn>
         <oldColumn oldPos="1" action="keep"  resourceField="description"></oldColumn>
@@ -39,7 +41,9 @@ Below is an example of a control file containing a single table-descriptor that 
       - **paging**         if present, and if value is *true*, then add pagination to the table  
       - **pageLength**       if present, and if paging is *true*, then sets the size of the pages (number of rows) to display per page. Default is 10  
       - **lengthChange** if paging is *true*, and if present and value is *true*, then provides a drop-down list allowing user to change page size.    
-      - **useOnlineDataTables** if *true*, then load jQuery DataTables library and css from online source. Otherwise, load from local "assets/js" and "assets/css" folders.  
+      - **useOnlineDataTables** if *true*, then load jQuery DataTables library and css from online source. Otherwise, load from local "assets/js" and "assets/css" folders. 
+- **headerClass** if present, the value of this tag is added as the value of a 'class' attribute to the target table's theader tag  
+- **headerStyle** if present, the value of this tag is added as the value of a 'style' attribute to the target table's theader tag        
 - **resourceDirectory** is the full pathname of the directory that holds the resource json files that were used to populate the table being altered. These resource files are used to populate any new columns added to the table.    
 - **oldColumn** is a specification of how to handle existing columns in the table. The attributes in this element dictate how the existing column is to be handled:  
      - **oldPos** indicates the column's position in the original table.  0 = first column, 1 = second column, and so on.

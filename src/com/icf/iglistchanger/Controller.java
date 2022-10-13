@@ -47,6 +47,8 @@ import org.jsoup.select.Elements;
  *         <b>pageLength</b>       -  if present, and if paging is <i>true</i>, then sets the size of the pages (number of rows) to display per page. Default is 10
  *         <b>lengthChange</b>     -  if paging is <i>true</i>, and if present and value is <i>true</i>, then provides a drop-down list allowing user to change page size.  
  *         <b>useOnlineDataTables</b> - if <i>true</i>, then load jQuery DataTables library and css from online source. Otherwise, load from local "assets/js" and "assets/css" folders.
+ * <b>headerClass</b> If present, the value of this tag is added as the value of a 'class' attribute to the target table's <i>theader</i> tag
+ * <b>headerStyle</b> If present, the value of this tag is added as the value of a 'style' attribute to the target table's <i>theader</i> tag
  * <b>resourceDirectory</b> is the full pathname of the directory that holds the resource json files that were used to populate the table being altered. These resource files are used to populate any new columns added to the table.    
  * <b>oldColumn</b> is a specification of how to handle existing columns in the table. The attributes in this element dictate how the existing column is to be handled:  
  *    <b>oldPos</b> indicates the column's position in the original table.  0 = first column, 1 = second column, and so on.
@@ -133,6 +135,18 @@ public class Controller {
 		Element header =  this.getFirstElementWithTag(oldTable, "thead"); //.oldTable.getElementsByTag("thead").get(0);   // Assumes the source table we are working with has a single header element.
 		Element newHeader = header.clone();                                // Clone the header, and empty the clone's children
 		newHeader.empty();
+		// If there are additional class or style elements specified in the descriptor, then add those to the new table's header element.
+		String oldClass = newHeader.attr("class");
+		String oldStyle = newHeader.attr("style");
+		String newClass = oldClass + " " + getControlValue("headerClass");
+		String newStyle = oldStyle + " " + getControlValue("headerStyle");
+		if (!newClass.isEmpty()) {
+			newHeader.attr("class", newClass);
+		}
+		if (!newStyle.isEmpty()) {
+			newHeader.attr("style", newStyle);
+		}
+
 		Element row =  this.getFirstElementWithTag(header, "tr"); //   header.getElementsByTag("tr").get(0);
 		Element newRow = row.clone();                                      // Get the single row (<tr>) from the source table header
 		newRow.empty();                                                    // Empty the clone row's children. (We'll re-populate from the source, with changes.)
@@ -194,39 +208,50 @@ public class Controller {
 		newBody = body.clone();                                  // Clone the body, and empty the clone's children
 		newBody.empty();
 		Elements rows = body.getElementsByTag("tr");                     // Now cycle through each row of the source table...
+		if (rows.size() < this.resources.size()) {
+			System.err.println("WARNING: there are more resources in the specified resource directory than there are rows in the table.");
+		}
 		for (int r=0; r < rows.size(); r++) {
-		    Element row = rows.get(r);
-			Element newRow = row.clone();   
-			newRow.empty();                                              // Clone the row, then empty the clone row's children. (We'll re-populate from the source, with changes.)       
-			Elements oldCols = row.getElementsByTag("td");  
-			//System.out.println("Row " + r + ": " +oldCols.size());
-		    JSONObject resource = this.resources.isEmpty() ? null : this.resources.get(r);  // Get the corresponding resource for this row. ASSUMPTION: The resource list is one-to-one with the rows in the table, in the same order.
-
-			for (int i = 0; i < oldCols.size(); i++ ) {                  // For each column in the source row, if we want to keep the column, copy/clone from the source to the new row.       
-				Element oldCol = oldCols.get(i);
-				try {
-					Element oldColSpec = this.oldColSpecs.get(i);
-					if ("keep".equalsIgnoreCase(oldColSpec.attr("action"))) {
-						//System.out.println("Keeping col " + i + ", " + oldCol.ownText());
-						Element newCol = oldCol.clone();
-						newRow.appendChild(newCol);	
-					}
-				}
-				catch (Exception e) {
-					// If no old column specs were found, then we should just skip this one and move on.
-				}
-
-				Elements newCols = getNewColumnSpecs(String.format("%d", i));
-				for (Element newColSpec : newCols) {                     // Now see if there are any new columns to add after the current column position we are working on (via the after-pos column specs)
-					String fieldVal = getResourceFieldValue(resource, newColSpec);
-					newRow.appendElement("td").text(fieldVal);
-				}
-				
+			if (r >= this.resources.size()) {
+				// Hmmm...we've run out of resources, so I guess just skip this row, since the resources are really the source of truth for this table data.
+				// Actually, just break out of the loop. No sense continuing on if there aren't any more resources.
+				System.err.println("WARNING: the number of resources in the specified resource directory is less than the number of rows in the table.");
+				break;
 			}
-			newBody.appendChild(newRow);                                 // Add this new row to the new body
+			else {
+			    Element row = rows.get(r);
+				Element newRow = row.clone();   
+				newRow.empty();                                              // Clone the row, then empty the clone row's children. (We'll re-populate from the source, with changes.)       
+				Elements oldCols = row.getElementsByTag("td");  
+				//System.out.println("Row " + r + ": " +oldCols.size());
+			    JSONObject resource = this.resources.isEmpty() ? null : this.resources.get(r);  // Get the corresponding resource for this row. ASSUMPTION: The resource list is one-to-one with the rows in the table, in the same order.
+	
+				for (int i = 0; i < oldCols.size(); i++ ) {                  // For each column in the source row, if we want to keep the column, copy/clone from the source to the new row.       
+					Element oldCol = oldCols.get(i);
+					try {
+						Element oldColSpec = this.oldColSpecs.get(i);
+						if ("keep".equalsIgnoreCase(oldColSpec.attr("action"))) {
+							//System.out.println("Keeping col " + i + ", " + oldCol.ownText());
+							Element newCol = oldCol.clone();
+							newRow.appendChild(newCol);	
+						}
+					}
+					catch (Exception e) {
+						// If no old column specs were found, then we should just skip this one and move on.
+					}
+	
+					Elements newCols = getNewColumnSpecs(String.format("%d", i));
+					for (Element newColSpec : newCols) {                     // Now see if there are any new columns to add after the current column position we are working on (via the after-pos column specs)
+						String fieldVal = getResourceFieldValue(resource, newColSpec);
+						newRow.appendElement("td").text(fieldVal);
+					}
+					
+				}
+				newBody.appendChild(newRow);                                 // Add this new row to the new body
+			}
 		}
 		this.newTable.appendChild(newBody);                              // Add the new body to the new table
-		System.out.println("\n\nNew Table:\n" + this.newTable + "\n\n");
+		//System.out.println("\n\nNew Table:\n" + this.newTable + "\n\n");
 		
 	}
 
@@ -252,6 +277,8 @@ public class Controller {
 		        <outputHTMLFile>measures-new.html</outputHTMLFile>
 		        <targetTablePos>0</targetTablePos>
 		        <addOns paging="true" ordering="true" searching="true" pageLength="5" lengthChange="false" useOnlineDataTables="true" />
+		        <headerClass>navbar navbar-inverse</headerClass>
+		        <headerStyle>color:white;</headerStyle>
 		        <resourceDirectory>C:\ICF-work\Dev\Measures\Ecqm-content-r4-2021\git-myFork\ecqm-content-r4-2021\input\resources\measure</resourceDirectory>
 		        <oldColumn oldPpos="0" action="keep" resourceField="title"></oldColumn>
 		        <newColumn afterPos="0" label="CMS ID" resourceField="identifier" subField="value" type="array" nth="" maxLen="" regex=".*FHIR" default="-"></newColumn>
@@ -267,20 +294,20 @@ public class Controller {
 		String targetFilename =  getControlValue("generatedHTMLFile");
 		System.out.println("\n\nProcessing file '" + targetFilename + "'");
 		if (targetFilename == null || targetFilename.isEmpty()) {
-			System.err.println("   No file found. Check '<generatedHTMLFile>' element");
+			System.err.println("   ERROR: No file found. Check '<generatedHTMLFile>' element");
 			return;
 		}
 
 		this.htmlDoc = FileUtils.parseXHtmlFile(getControlValue("generatedHTMLFile")); // open the actual html file (generated by tooling) as an html Document
 		if (this.htmlDoc == null) {
-			System.err.println("   No file found. Check '<generatedHTMLFile>' element");
+			System.err.println("   ERROR: No file found. Check '<generatedHTMLFile>' element");
 			return;
 		}
 		try {
 			this.targetTablePos = Integer.parseInt(getControlValue("targetTablePos"));     // The actual html file may have multiple tables. This tells us which one we will alter
 		}
 		catch (Exception e) {
-			System.err.println("    Problem determining targetTablePos value. It must be an integer.");
+			System.err.println("    ERROR: Problem determining targetTablePos value. It must be an integer.");
 			this.targetTablePos = -1;
 		}
 		this.oldTable = getTargetTable();                                              // The table element from the target html file, determined by the nth position, above
@@ -288,6 +315,8 @@ public class Controller {
 			return;  // Whaddya gonna do if there's no table to alter?
 		}
 		this.newTable = this.oldTable.clone();                                         // A clone of the original table element - we will actually edit this clone.
+
+
 		this.resourceDir = getControlValue("resourceDirectory");                       // where the resource files are located
 		this.resourceFilenames = FileUtils.getDirFiles(this.resourceDir);              // the list of resource filenames found in the above dir
 		this.outputHTMLFilename = getControlValue("outputHTMLFile");                   // Optional name of a file to output when we finish editing. (If not present, we overwrite the original.)
@@ -302,7 +331,7 @@ public class Controller {
 			}
 		}
 		else {
-			System.err.println("    ** No resources files found at: " + this.resourceDir + "\n   Table-Descriptor Default column values will be used throughout. See " + controlFilename);
+			System.err.println("    **ERROR:  No resources files found at: " + this.resourceDir + "\n   Table-Descriptor Default column values will be used throughout. See " + controlFilename);
 		}
 
 		
@@ -354,14 +383,14 @@ public class Controller {
 		if (this.htmlDoc != null) {
 			Elements tables = this.htmlDoc.getElementsByTag("table");
 			if (tables == null || tables.isEmpty()) {
-				System.err.println("    No table elements were found in this html file.");
+				System.err.println("    ERROR: No table elements were found in this html file.");
 			}
 			else {
 				try {
 					table = tables.get(this.targetTablePos);
 				}
 				catch (Exception e) {
-					System.err.println("    The target table position, " + targetTablePos + " is invalid given the number of tables in the file, " + tables.size());
+					System.err.println("    ERROR: The target table position, " + targetTablePos + " is invalid given the number of tables in the file, " + tables.size());
 				}
 			}
 			
@@ -494,7 +523,7 @@ public class Controller {
 						}
 				}
 			 break;
-			 default: System.err.println("    The field type of '" + fType + "' of field '" + field + "' is not recognized. Is should be one of 'string', 'object', or 'array'"); break;
+			 default: System.err.println("    ERROR: The field type of '" + fType + "' of field '" + field + "' is not recognized. Is should be one of 'string', 'object', or 'array'"); break;
 		}
 		return val; // Note: if none of the cases above fired, then val is still set to the colSpec's default value
 	}
